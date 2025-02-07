@@ -7,7 +7,7 @@ const socket = new WebSocket('wss://localhost/wsirc');
 
 socket.onopen = function(event) {
   // Handle connection open
-  document.write("Connection open.<br>\n");
+  console.log("Connection open.");
   //alert('You are Connected to WebSocket Server');
   sendMessage("nick guest"+Math.floor(Math.random()*10000000));
   sendMessage("user guest guest guest: guest");
@@ -15,21 +15,20 @@ socket.onopen = function(event) {
 
 socket.onmessage = function(event) {
   // Handle received message
-  reader = new FileReader();
-  reader.onload = function(e) {
-    messagetext = reader.result;
-    document.write("Received message: "+messagetext+".<br>\n");
+  if (event.data instanceof Blob) {
+    reader = new FileReader();
+    reader.onload = function(e) {
+      messagetext = reader.result;
+      console.log("Message from server: ", messagetext);
+    };
+    reader.readAsText(event.data);
+  } else {
+    messagetext = event.data;
     console.log("Message from server: ", messagetext);
-  };
-  reader.readAsText(event.data);
+  }
 };
 
 socket.onclose = function(event) {
   // Handle connection close
-  document.write("Connection close.<br>\n");
+  console.log("Connection close.");
 };
-
-function sendMessage(message) {
-  socket.send(message);
-}
-</script>
