@@ -1,0 +1,29 @@
+<html>
+
+test.
+
+<script>
+const socket = new WebSocket('wss://localhost/wsirc');
+
+socket.onopen = function(event) {
+  // Handle connection open
+  document.write("Connection open.");
+};
+
+socket.onmessage = function(event) {
+  // Handle received message
+  document.write("Received message.");
+ };
+
+socket.onclose = function(event) {
+  // Handle connection close
+  document.write("Connection close.");
+};
+
+function sendMessage(message) {
+  socket.send(message);
+  document.write("Send message.");
+ }
+</script>
+
+</html>
