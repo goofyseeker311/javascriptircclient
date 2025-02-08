@@ -29,4 +29,6 @@ Apache site enable websocket rewrite:
 RewriteEngine On
 RewriteCond %{HTTP:Upgrade} =websocket [NC]
 RewriteRule /wsirc ws://localhost:6668/ [P,L]
+ProxyPass /wsirc http://localhost:6668/
+ProxyPassReverse /wsirc http://localhost:6668/
 ```
