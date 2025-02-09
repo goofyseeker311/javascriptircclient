@@ -8,8 +8,7 @@
 </body>
 <script>
 const socket = new WebSocket('wss://localhost/wsirc');
-//sendMessage("nick guest"+Math.floor(Math.random()*10000000));
-//sendMessage("user guest guest guest: guest");
+var nick = "guest"+Math.floor(Math.random()*10000000);
 
 function submitMessage() {
   msgtext = document.getElementById("msg").value;
@@ -28,14 +27,16 @@ send.onclick = function(){
 socket.onopen = function(event) {
   // Handle connection open
   console.log("Connection open.");
+  sendMessage("nick "+nick);
+  sendMessage("user guest guest guest: guest");
+  //sendMessage("join #public");
 };
 socket.onmessage = function(event) {
   // Handle received message
-  console.log("Message from server (raw): ", event.data);
   reader = new FileReader();
   reader.onload = function(e) {
     messagetext = reader.result;
-    document.getElementById("irc").value += messagetext;
+    //document.getElementById("irc").value += messagetext;
     console.log("Message from server: ", messagetext);
   };
   reader.readAsText(event.data);
@@ -45,8 +46,9 @@ socket.onclose = function(event) {
   messagetext = "Connection close.";
 };
 function sendMessage(message) {
-  const blob = new Blob([message+'\n'], {type: '' });
-  console.log("Message to server: ", blob);
+  const blob = new Blob([message+"\n"], {type: '' });
+  socket.send(blob);
+  console.log("Message to server: ", message);
 }
 </script>
 </html>
