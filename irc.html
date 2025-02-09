@@ -9,42 +9,44 @@
 <script>
 const socket = new WebSocket('wss://localhost/wsirc');
 var nick = "guest"+Math.floor(Math.random()*10000000);
-
 function submitMessage() {
   msgtext = document.getElementById("msg").value;
-  sendMessage(msgtext);
+  cmdtext = "";
+  if (msgtext.startsWith("/")) {
+    cmdtext = msgtext.substring(1);
+  } else if (msgtext.trim().length>0) {
+    document.getElementById("irc").value += nick+"\t"+msgtext+"\n";
+    cmdtext = "PRIVMSG #public "+msgtext;
+  }
+  if (cmdtext.length>0) {
+    sendMessage(cmdtext);
+  }
   document.getElementById("msg").value = "";
 }
-msg.addEventListener("keyup", function(event) {
-  if (event.key === "Enter") {
-    submitMessage();
-  }
-});
-send.onclick = function(){
-  submitMessage();
-};
-
+msg.addEventListener("keyup", function(event) { if (event.key === "Enter") {submitMessage();} });
+send.onclick = function(){ submitMessage(); };
 socket.onopen = function(event) {
-  // Handle connection open
   console.log("Connection open.");
   sendMessage("nick "+nick);
-  sendMessage("user guest guest guest: guest");
+  sendMessage("user "+nick+" "+nick+" "+nick+": "+nick+"");
   //sendMessage("join #public");
 };
 socket.onmessage = function(event) {
-  // Handle received message
   reader = new FileReader();
   reader.onload = function(e) {
     messagetext = reader.result;
-    //document.getElementById("irc").value += messagetext;
+    if (messagetext!==null) {
+      if (messagetext.startsWith("PING :")) {
+        sendMessage("PONG :"+messagetext.substring(6));
+      } else {
+        //document.getElementById("irc").value += messagetext;
+      }
+    }
     console.log("Message from server: ", messagetext);
   };
   reader.readAsText(event.data);
 };
-socket.onclose = function(event) {
-  // Handle connection close
-  messagetext = "Connection close.";
-};
+socket.onclose = function(event) { console.log("Connection close."); };
 function sendMessage(message) {
   const blob = new Blob([message+"\n"], {type: '' });
   socket.send(blob);
