@@ -1,6 +1,13 @@
 <html>
 
-test.
+<head>
+  <title>IRC client</title>
+</head>
+
+<body>
+<textarea id="irc" name="irc" rows="20" cols="80" readonly>
+</textarea>
+</body>
 
 <script>
 const socket = new WebSocket('wss://localhost/wsirc');
@@ -8,29 +15,24 @@ const socket = new WebSocket('wss://localhost/wsirc');
 socket.onopen = function(event) {
   // Handle connection open
   console.log("Connection open.");
-  //alert('You are Connected to WebSocket Server');
   //sendMessage("nick guest"+Math.floor(Math.random()*10000000));
   //sendMessage("user guest guest guest: guest");
 };
 
 socket.onmessage = function(event) {
   // Handle received message
-  if (event.data instanceof Blob) {
-    reader = new FileReader();
-    reader.onload = function(e) {
-      messagetext = reader.result;
-      console.log("Message from server: ", messagetext);
-    };
-    reader.readAsText(event.data);
-  } else {
-    messagetext = event.data;
+  reader = new FileReader();
+  reader.onload = function(e) {
+    messagetext = reader.result;
+    document.getElementById("irc").value += messagetext;
     console.log("Message from server: ", messagetext);
-  }
+  };
+  reader.readAsText(event.data);
 };
 
 socket.onclose = function(event) {
   // Handle connection close
-  console.log("Connection close.");
+  messagetext = "Connection open.";
 };
 
 function sendMessage(message) {
