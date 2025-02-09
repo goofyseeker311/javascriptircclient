@@ -15,11 +15,10 @@ function submitMessage() {
     cmdtext = msgtext.substring(1);
   } else if (msgtext.trim().length>0) {
     document.getElementById("irc").value += nick+":\t"+msgtext+"\n";
+    irc.scrollTop = irc.scrollHeight;
     cmdtext = "privmsg #public :"+msgtext;
   }
-  if (cmdtext.length>0) {
-    sendMessage(cmdtext);
-  }
+  if (cmdtext.length>0) { sendMessage(cmdtext); }
   document.getElementById("msg").value = "";
 }
 msg.addEventListener("keyup", function(event) { if (event.key === "Enter") {submitMessage();} });
@@ -40,6 +39,7 @@ socket.onmessage = function(event) {
           chnpart = msgparts[2];
           msgtext = messagetext.substring(messagetext.toLowerCase().indexOf(chnpart.toLowerCase())+chnpart.length+2);
           document.getElementById("irc").value += usrpart + ":\t" + msgtext;
+          irc.scrollTop = irc.scrollHeight;
         }
       }
     }
