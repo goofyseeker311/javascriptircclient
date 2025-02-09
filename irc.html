@@ -2,7 +2,7 @@
 <head><title>IRC client</title></head>
 <body><table width="100%" height="100%" style="border:0; padding:0;">
 <tr height="100%"><td colspan="2"><textarea id="irc" name="irc" readonly style="resize: none; width:100%; height:100%;"></textarea></td></tr>
-<tr height="20"><td width="100%"><input id="msg" name="msg" type="text" style="width:100%;"></td><td width="20"><button id="send" name="send" type="button">Send</td></tr>
+<tr height="20"><td width="100%"><input id="msg" name="msg" type="text" style="width:100%;" autocomplete="off" autofocus></td><td width="20"><button id="send" name="send" type="button">Send</td></>
 </table></body>
 <script>
 const socket = new WebSocket('wss://localhost/wsirc');
