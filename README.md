@@ -1,6 +1,6 @@
 # JavaScript IRC Client
 
-HTML embed code block with ircclient.js that implements html/javascript IRC client on a website.
+HTML embed code block with ircclient.js that implements html/javascript websocket IRC client on a website.
 
 Requirements (debian linux server):
  * Apache HTTP Server 2.4.47 or later with mod_proxy, mod_proxy_http and mod_rewrite enabled.
