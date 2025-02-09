@@ -9,8 +9,8 @@ socket.onopen = function(event) {
   // Handle connection open
   console.log("Connection open.");
   //alert('You are Connected to WebSocket Server');
-  sendMessage("nick guest"+Math.floor(Math.random()*10000000));
-  sendMessage("user guest guest guest: guest");
+  //sendMessage("nick guest"+Math.floor(Math.random()*10000000));
+  //sendMessage("user guest guest guest: guest");
 };
 
 socket.onmessage = function(event) {
@@ -32,3 +32,11 @@ socket.onclose = function(event) {
   // Handle connection close
   console.log("Connection close.");
 };
+
+function sendMessage(message) {
+  socket.send(message);
+  console.log("Message to server: ", message);
+}
+</script>
+
+</html>
