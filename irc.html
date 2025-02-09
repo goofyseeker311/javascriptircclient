@@ -1,30 +1,34 @@
 <html>
-
-<head>
-  <title>IRC client</title>
-</head>
-
+<head><title>IRC client</title></head>
 <body>
 <table>
-<tr>
-  <td colspan="2"><textarea id="irc" name="irc" rows="20" cols="80" readonly style="resize: none;"></textarea></td>
-</tr>
-<tr>
-  <td><input type="text" size="74"></td><td><button type="button">Send</td>
-</tr>
+<tr><td colspan="2"><textarea id="irc" name="irc" rows="20" cols="80" readonly style="resize: none;"></textarea></td></tr>
+<tr><td><input id="msg" name="msg" type="text" size="74"></td><td><button id="send" name="send" type="button">Send</td></tr>
 </table>
 </body>
-
 <script>
 const socket = new WebSocket('wss://localhost/wsirc');
+//sendMessage("nick guest"+Math.floor(Math.random()*10000000));
+//sendMessage("user guest guest guest: guest");
+
+function submitMessage() {
+  msgtext = document.getElementById("msg").value;
+  sendMessage(msgtext);
+  document.getElementById("msg").value = "";
+}
+msg.addEventListener("keyup", function(event) {
+  if (event.key === "Enter") {
+    submitMessage();
+  }
+});
+send.onclick = function(){
+  submitMessage();
+};
 
 socket.onopen = function(event) {
   // Handle connection open
   console.log("Connection open.");
-  //sendMessage("nick guest"+Math.floor(Math.random()*10000000));
-  //sendMessage("user guest guest guest: guest");
 };
-
 socket.onmessage = function(event) {
   // Handle received message
   reader = new FileReader();
@@ -35,16 +39,13 @@ socket.onmessage = function(event) {
   };
   reader.readAsText(event.data);
 };
-
 socket.onclose = function(event) {
   // Handle connection close
   messagetext = "Connection open.";
 };
-
 function sendMessage(message) {
   socket.send(message);
   console.log("Message to server: ", message);
 }
 </script>
-
 </html>
