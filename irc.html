@@ -1,12 +1,12 @@
 <html>
 <head><title>IRC client</title></head>
-<body><table>
-<tr><td colspan="2"><textarea id="irc" name="irc" rows="20" cols="80" readonly style="resize: none;"></textarea></td></tr>
-<tr><td><input id="msg" name="msg" type="text" size="74"></td><td><button id="send" name="send" type="button">Send</td></tr>
+<body><table width="100%" height="100%">
+<tr height="100%"><td colspan="2"><textarea id="irc" name="irc" readonly style="resize: none; width:100%; height:100%;"></textarea></td></tr>
+<tr height="20"><td witdh="100%"><input id="msg" name="msg" type="text" style="width:100%;"></td><td width="20"><button id="send" name="send" type="button">Send</td></tr>
 </table></body>
 <script>
 const socket = new WebSocket('wss://localhost/wsirc');
-var nick = "guest"+Math.floor(Math.random()*10000000);
+var nick = "guest"+Math.floor(Math.random()*100000);
 var joined = false;
 function submitMessage() {
   msgtext = document.getElementById("msg").value;
@@ -14,7 +14,7 @@ function submitMessage() {
   if (msgtext.startsWith("/")) {
     cmdtext = msgtext.substring(1);
   } else if (msgtext.trim().length>0) {
-    document.getElementById("irc").value += nick+":\t"+msgtext+"\n";
+    document.getElementById("irc").value += nick+": "+msgtext+"\n";
     irc.scrollTop = irc.scrollHeight;
     cmdtext = "privmsg #public :"+msgtext;
   }
@@ -28,6 +28,7 @@ socket.onmessage = function(event) {
   reader = new FileReader();
   reader.onload = function(e) {
     messagetext = reader.result;
+    console.log("Message from server: ", messagetext);
     if (messagetext!==null) {
       if (messagetext.toLowerCase().startsWith("ping :")) {
         sendMessage("pong :"+messagetext.substring(6));
@@ -38,12 +39,11 @@ socket.onmessage = function(event) {
           usrpart = msgparts[0].substring(1,msgparts[0].indexOf("!"));
           chnpart = msgparts[2];
           msgtext = messagetext.substring(messagetext.toLowerCase().indexOf(chnpart.toLowerCase())+chnpart.length+2);
-          document.getElementById("irc").value += usrpart + ":\t" + msgtext;
+          document.getElementById("irc").value += usrpart + ": " + msgtext;
           irc.scrollTop = irc.scrollHeight;
         }
       }
     }
-    console.log("Message from server: ", messagetext);
   };
   reader.readAsText(event.data);
 };
