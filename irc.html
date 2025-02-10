@@ -14,7 +14,7 @@ function submitMessage() {
   if (msgtext.startsWith("/")) {
     cmdtext = msgtext.substring(1);
   } else if (msgtext.trim().length>0) {
-    document.getElementById("irc").value += nick+": "+msgtext+"\n";
+    document.getElementById("irc").value += "(#public) " + nick+": "+msgtext+"\n";
     irc.scrollTop = irc.scrollHeight;
     cmdtext = "privmsg #public :"+msgtext;
   }
@@ -35,16 +35,17 @@ socket.onmessage = function(event) {
         if (!joined) { joined = true; sendMessage("join #public"); }
       } else {
         msgparts = messagetext.split(" ");
-        origpart = msgparts[0].toLowerCase().substring(1);
-        actpart = msgparts[1].toLowerCase();
-        if (actpart==="privmsg") {
-          usrpart = msgparts[0].substring(1,msgparts[0].indexOf("!")); chnpart = msgparts[2];
-          msgtext = messagetext.substring(messagetext.toLowerCase().indexOf(chnpart.toLowerCase())+chnpart.length+2);
-          document.getElementById("irc").value += usrpart + ": " + msgtext;
+        origpart = msgparts[0].substring(1).trim();
+        actpart = msgparts[1].trim();
+        targetpart = msgparts[2].trim();
+        if (actpart.toLowerCase()==="privmsg") {
+          usrpart = origpart.substring(0,origpart.indexOf("!"));
+          msgtext = messagetext.substring(messagetext.toLowerCase().indexOf(targetpart.toLowerCase())+targetpart.length+2);
+          document.getElementById("irc").value += "(" +targetpart+ ") " + usrpart + ": " + msgtext;
           irc.scrollTop = irc.scrollHeight;
-        } else if (actpart==="nick") {
+        } else if (actpart.toLowerCase()==="nick") {
           if (origpart===nick) {
-            nick = msgparts[2].substring(1).trim();
+            nick = targetpart.substring(1).trim();
           }
         }
       }
