@@ -35,12 +35,17 @@ socket.onmessage = function(event) {
         if (!joined) { joined = true; sendMessage("join #public"); }
       } else {
         msgparts = messagetext.split(" ");
-        if (msgparts[1].toLowerCase()==="privmsg") {
-          usrpart = msgparts[0].substring(1,msgparts[0].indexOf("!"));
-          chnpart = msgparts[2];
+        origpart = msgparts[0].toLowerCase().substring(1);
+        actpart = msgparts[1].toLowerCase();
+        if (actpart==="privmsg") {
+          usrpart = msgparts[0].substring(1,msgparts[0].indexOf("!")); chnpart = msgparts[2];
           msgtext = messagetext.substring(messagetext.toLowerCase().indexOf(chnpart.toLowerCase())+chnpart.length+2);
           document.getElementById("irc").value += usrpart + ": " + msgtext;
           irc.scrollTop = irc.scrollHeight;
+        } else if (actpart==="nick") {
+          if (origpart===nick) {
+            nick = msgparts[2].substring(1).trim();
+          }
         }
       }
     }
@@ -49,8 +54,7 @@ socket.onmessage = function(event) {
 };
 socket.onclose = function(event) { console.log("Connection close."); };
 function sendMessage(message) {
-  const blob = new Blob([message+"\n"], {type: '' });
-  socket.send(blob);
+  const blob = new Blob([message+"\n"], {type: '' }); socket.send(blob);
   console.log("Message to server: ", message);
 }
 </script>
