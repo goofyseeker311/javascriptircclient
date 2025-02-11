@@ -7,6 +7,20 @@
 <script>
 var socket = connect();
 var nick = "guest"+Math.floor(Math.random()*100000);
+if (document.cookie!=="") {
+  cookies = document.cookie;
+  console.log("cookies: ",cookies);
+  cookielist = cookies.split(";");
+  for (var i=0;i<cookielist.length;i++) {
+    cookieparts = cookielist[i].split("=");
+    namepart = cookieparts[0].trim();
+    nickpart = cookieparts[1].trim();
+    if (namepart==="nick") {
+      nick = nickpart;
+      console.log("cookie nick: ",nick);
+    }
+  }
+}
 var joined = false;
 function submitMessage() {
   msgtext = document.getElementById("msg").value;
@@ -49,6 +63,7 @@ function connect() {
           } else if (actpart.toLowerCase()==="nick") {
             if (origpart===nick) {
               nick = targetpart.substring(1).trim();
+              document.cookie = "nick="+nick+"; expires=Thu, 6 Dec 2999 12:00:00 UTC";
             }
           }
         }
