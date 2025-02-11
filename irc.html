@@ -5,7 +5,7 @@
 <tr height="20"><td width="100%"><input id="msg" name="msg" type="text" style="width:100%; height:100%;" autocomplete="off" autofocus></td><td width="20"><button id="send" name="send" type="button">Send</td></tr>
 </table></body>
 <script>
-const socket = new WebSocket('wss://localhost/wsirc');
+var socket = connect();
 var nick = "guest"+Math.floor(Math.random()*100000);
 var joined = false;
 function submitMessage() {
@@ -23,37 +23,41 @@ function submitMessage() {
 }
 msg.addEventListener("keyup", function(event) { if (event.key === "Enter") {submitMessage();} });
 send.onclick = function(){ submitMessage(); };
-socket.onopen = function(event) { console.log("Connection open."); sendMessage("nick "+nick); sendMessage("user "+nick+" ws ws: "+nick+""); };
-socket.onmessage = function(event) {
-  reader = new FileReader();
-  reader.onload = function(e) {
-    messagetext = reader.result;
-    console.log("Message from server: ", messagetext);
-    if (messagetext!==null) {
-      if (messagetext.toLowerCase().startsWith("ping :")) {
-        sendMessage("pong :"+messagetext.substring(6));
-        if (!joined) { joined = true; sendMessage("join #public"); }
-      } else {
-        msgparts = messagetext.split(" ");
-        origpart = msgparts[0].substring(1).trim();
-        actpart = msgparts[1].trim();
-        targetpart = msgparts[2].trim();
-        if (actpart.toLowerCase()==="privmsg") {
-          usrpart = origpart.substring(0,origpart.indexOf("!"));
-          msgtext = messagetext.substring(messagetext.toLowerCase().indexOf(targetpart.toLowerCase())+targetpart.length+2);
-          document.getElementById("irc").value += "(" +targetpart+ ") " + usrpart + ": " + msgtext;
-          irc.scrollTop = irc.scrollHeight;
-        } else if (actpart.toLowerCase()==="nick") {
-          if (origpart===nick) {
-            nick = targetpart.substring(1).trim();
+function connect() {
+  newsocket = new WebSocket('wss://localhost/wsirc');
+  newsocket.onopen = function(event) { console.log("Connection open."); sendMessage("nick "+nick); sendMessage("user "+nick+" ws ws: "+nick+""); };
+  newsocket.onmessage = function(event) {
+    reader = new FileReader();
+    reader.onload = function(e) {
+      messagetext = reader.result;
+      console.log("Message from server: ", messagetext);
+      if (messagetext!==null) {
+        if (messagetext.toLowerCase().startsWith("ping :")) {
+          sendMessage("pong :"+messagetext.substring(6));
+          if (!joined) { joined = true; sendMessage("join #public"); }
+        } else {
+          msgparts = messagetext.split(" ");
+          origpart = msgparts[0].substring(1).trim();
+          actpart = msgparts[1].trim();
+          targetpart = msgparts[2].trim();
+          if (actpart.toLowerCase()==="privmsg") {
+            usrpart = origpart.substring(0,origpart.indexOf("!"));
+            msgtext = messagetext.substring(messagetext.toLowerCase().indexOf(targetpart.toLowerCase())+targetpart.length+2);
+            document.getElementById("irc").value += "(" +targetpart+ ") " + usrpart + ": " + msgtext;
+            irc.scrollTop = irc.scrollHeight;
+          } else if (actpart.toLowerCase()==="nick") {
+            if (origpart===nick) {
+              nick = targetpart.substring(1).trim();
+            }
           }
         }
       }
-    }
+    };
+    reader.readAsText(event.data);
   };
-  reader.readAsText(event.data);
-};
-socket.onclose = function(event) { console.log("Connection close."); };
+  newsocket.onclose = function(event) { console.log("Connection close."); connect(); };
+  return newsocket;
+}
 function sendMessage(message) {
   const blob = new Blob([message+"\n"], {type: '' }); socket.send(blob);
   console.log("Message to server: ", message);
