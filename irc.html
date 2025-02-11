@@ -2,7 +2,7 @@
 <head><title>IRC client</title></head>
 <body><table width="100%" height="100%" style="border:0; padding:0; margin:0;">
 <tr height="100%"><td colspan="2"><textarea id="irc" name="irc" readonly style="resize:none; width:100%; height:100%;"></textarea></td></tr>
-<tr height="20"><td width="100%"><input id="msg" name="msg" type="text" style="width:100%; height:100%;" autocomplete="off" autofocus></td><td width="20"><button id="send" name="send" type="button">Send</td></tr>
+<tr height="20"><td width="100%"><input id="msg" name="msg" type="text" style="width:100%; height:100%;" autocomplete="off" autofocus disabled></td><td width="20"><button id="send" name="send" type="button">Send</td></tr>
 </table></body>
 <script>
 var socket = connect();
@@ -24,8 +24,9 @@ function submitMessage() {
 msg.addEventListener("keyup", function(event) { if (event.key === "Enter") {submitMessage();} });
 send.onclick = function(){ submitMessage(); };
 function connect() {
+  console.log("Connecting."); joined = false;
   newsocket = new WebSocket('wss://localhost/wsirc');
-  newsocket.onopen = function(event) { console.log("Connection open."); sendMessage("nick "+nick); sendMessage("user "+nick+" ws ws: "+nick+""); };
+  newsocket.onopen = function(event) { console.log("Connection open."); sendMessage("nick "+nick); sendMessage("user "+nick+" ws ws: "+nick+""); msg.disabled = false; };
   newsocket.onmessage = function(event) {
     reader = new FileReader();
     reader.onload = function(e) {
@@ -55,7 +56,7 @@ function connect() {
     };
     reader.readAsText(event.data);
   };
-  newsocket.onclose = function(event) { console.log("Connection close."); connect(); };
+  newsocket.onclose = function(event) { console.log("Connection close."); msg.disabled = true; socket = connect(); };
   return newsocket;
 }
 function sendMessage(message) {
