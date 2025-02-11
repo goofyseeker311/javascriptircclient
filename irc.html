@@ -7,6 +7,7 @@
 <script>
 var socket = connect();
 var nick = "guest"+Math.floor(Math.random()*100000);
+var joined = false;
 if (document.cookie!=="") {
   cookies = document.cookie;
   console.log("cookies: ",cookies);
@@ -21,7 +22,6 @@ if (document.cookie!=="") {
     }
   }
 }
-var joined = false;
 function submitMessage() {
   msgtext = document.getElementById("msg").value;
   cmdtext = "";
@@ -40,7 +40,7 @@ send.onclick = function(){ submitMessage(); };
 function connect() {
   console.log("Connecting."); joined = false;
   newsocket = new WebSocket('wss://localhost/wsirc');
-  newsocket.onopen = function(event) { console.log("Connection open."); sendMessage("nick "+nick); sendMessage("user "+nick+" ws ws: "+nick+""); msg.disabled = false; };
+  newsocket.onopen = function(event) { console.log("Connection open."); sendMessage("nick "+nick); sendMessage("user "+nick+" ws ws: "+nick+""); msg.disabled = false; msg.focus(); };
   newsocket.onmessage = function(event) {
     reader = new FileReader();
     reader.onload = function(e) {
