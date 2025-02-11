@@ -21,7 +21,7 @@ sudo a2enmod rewrite
 
 Enable websockify websocket mirror:
 ```
-sudo websockify -D --log-file=/var/log/websockify.log 6668 localhost:6667
+websockify -D --log-file=/var/log/websockify.log 6668 localhost:6667
 ```
 
 Apache site enable websocket rewrite:
